@@ -1,8 +1,10 @@
+# This is a Login Project. User can create new accont or if they they already have accounts, they can enter their account using their password
+# If error such as image cannot open occurs, makes sure your terminal enter the same folder of the script to access the iamge files.
 from tkinter import *
 from tkinter import messagebox
 from pathlib import Path
 from tkinter import ttk
-
+# Create main sign_in window to access accounts, note: Basically, there are two pages (MAIN for sign_In, SUB for sign_Up)
 main = Tk()
 main.title('Login Page')
 main.geometry('925x500+290+150')
@@ -12,10 +14,24 @@ main.resizable(False, False)
 img = PhotoImage(file="login4.png")
 img1 = PhotoImage(file="login5.png")
 
+# If the database file doesn't exist, create it
+file_path = 'database.txt'
+if not Path(file_path).exists():
+    with open(file_path, 'w'):
+        pass
+    # Open database to and put the key and value into dictionary 
+        
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        data = {}
+        for line in lines:
+            t, v = line.strip().split(':')
+            data[t] = v
+
 ####################################################  Sign_up (SUB window)  ######################################################
 def createwindow():
     main.iconify() # to hide main window
-    sub = Toplevel(main)
+    sub = Toplevel(main) # Create top level window for user signup 
     sub.title('Signup Page')
     sub.geometry('925x500+290+150')
     sub.config(bg='white')
@@ -30,19 +46,20 @@ def createwindow():
         a = signup_user.get()
         b = signup_pwd.get()
         c = confirm_pwd.get()
+        # Open database to and put the key and value into dictionary 
         
-        file_path = 'database.txt'
         with open(file_path, 'r') as file:
             lines = file.readlines()
             data = {}
             for line in lines:
                 t, v = line.strip().split(':')
                 data[t] = v
+                
         if b != c:
             messagebox.showinfo('Invalid Error', 'Password should match with confirm Password!')
-        elif a in data:
+        elif a in data: # Check username whether already exist or not
             messagebox.showinfo('Invalid Error', 'Username already exists.')
-        else:
+        else: # Create user information within database 
             a = str(a)
             b = str(b)
             file = open('database.txt', 'a')
@@ -58,7 +75,7 @@ def createwindow():
 
             
     #### SUB Function #####
-    
+    # Create frames within Top level window such as creating frames
     Label(sub, image=img1, bg='white').place(x=100,y=125)
 
     frame1 = Frame(sub, width=350, height=350, bg='white')
@@ -67,8 +84,8 @@ def createwindow():
     sign_head = Label(frame1, text='Sign up', fg='#57a1f8', bg='white', font=('Miscrosoft YaHei UI Light',23))
     sign_head.place(x=135,y=25)
     #####--------------------------------------
-
-    def cursor_in(e):
+    # Collect username from the user
+    def cursor_in(e): # function to delete username when the cursor enters
         signup_user.delete(0, 'end')
 
     def cursor_out(e):
@@ -85,8 +102,8 @@ def createwindow():
     Frame(frame1, width=250, height=2, bg='black').place(x=60,y=120)
 
     #####---------------------------------------------------
-
-    def cursor_in(e):
+    # Collect password from the user
+    def cursor_in(e): # function to delete password when the cursor enters
         signup_pwd.delete(0, 'end')
 
     def cursor_out(e):
@@ -101,8 +118,8 @@ def createwindow():
     signup_pwd.bind('<FocusOut>', cursor_out)
 
     Frame(frame1, width=250, height=2, bg='black').place(x=60,y=170)
-
-    def cursor_in(e):
+    # Confirm the user password
+    def cursor_in(e): # function to delete password when the cursor enters
         confirm_pwd.delete(0, 'end')
 
     def cursor_out(e):
@@ -119,16 +136,16 @@ def createwindow():
     Frame(frame1, width=250, height=2, bg='black').place(x=60,y=220)
 
     #####---------------------------------------------------
-
+    # Button to confirm the user information
     confirm_button = Button(frame1, text='Confirm', width=25, bg='#57a1f8', fg='white', font=('Miscrosoft YaHei UI Light',10,'bold'))
     confirm_button.config(bd=0)
     confirm_button.config(command=signup)
     confirm_button.place(x=85,y=260)
 
     Label(frame1, text="Do you have an account?", bd=0, fg='black', bg='white',font=('Miscrosoft YaHei UI Light',9)).place(x=90,y=330)
-
+    # Button to go into signin window (Main)
     sign_in = Button(frame1, text='Signin', bd=0, bg='white', fg='#57a1f8', width=5, cursor='hand2')
-    sign_in.config(command=signin_sub)
+    sign_in.config(command=signin_sub)# Connect with signin_sub function
     sign_in.place(x=230,y=328)
 
 ####################################################  SUB  ######################################################
@@ -136,14 +153,9 @@ def createwindow():
 ####################################################  MAIN  ######################################################      
 
 #### MAIN Function #####
-##### Open database and identify valid username and password #####
+##### Open database and identify whether username and password are valid #####
 def signin():
     file_path = 'database.txt'
-    
-    # If the database file doesn't exist, create it
-    if not Path(file_path).exists():
-        with open(file_path, 'w'):
-            pass
 
     # Open the database file for reading
     with open(file_path, 'r') as file:
@@ -156,7 +168,7 @@ def signin():
     username = user.get()
     password = pwd.get()
 
-    if username == 'admin' and password == 'admin123':
+    if username == 'admin' and password == 'admin123': # for admin's account
             screen = Toplevel(main)
             screen.title('Root account')
             screen.geometry('925x500+290+150')
@@ -182,7 +194,7 @@ def signin():
             screen.grab_set()
             screen.wait_window()
 
-    elif username in data:
+    elif username in data: # for user's account
         if password == data[username]:
             screen1 = Toplevel(main)
             screen1.title('User account')
@@ -198,7 +210,7 @@ def signin():
     else:
         messagebox.showinfo('Invalid Error', "Username doesn't exist.")
 #### MAIN Function #####
-
+# To create frame within Main window
 Label(main, image=img, bg='white').place(x=100,y=125)
 
 frame = Frame(main, width=350, height=350, bg='white')
@@ -208,7 +220,7 @@ sign_head = Label(frame, text='Sign in', fg='#57a1f8', bg='white', font=('Miscro
 sign_head.place(x=135,y=25)
 
 #####---------------------------------------------------
-
+# Entry for username
 def cursor_in(e):
     user.delete(0, 'end')
 
@@ -226,7 +238,7 @@ user.bind('<FocusOut>', cursor_out)
 Frame(frame, width=250, height=2, bg='black').place(x=60,y=120)
 
 #####---------------------------------------------------
-
+# Entry for password
 def cursor_in(e):
     pwd.delete(0, 'end')
 
@@ -244,14 +256,14 @@ pwd.bind('<FocusOut>', cursor_out)
 Frame(frame, width=250, height=2, bg='black').place(x=60,y=170)
 
 #####---------------------------------------------------
-
+# Login button to login into account
 sign_in_button = Button(frame, text='Login', width=25, bg='#57a1f8', fg='white', font=('Miscrosoft YaHei UI Light',10,'bold'))
 sign_in_button.config(bd=0)
 sign_in_button.config(command=signin)
 sign_in_button.place(x=85,y=210)
 
 Label(frame, text="Don't have an account?", bd=0, fg='black', bg='white',font=('Miscrosoft YaHei UI Light',9)).place(x=90,y=270)
-
+# Sign_up button to enter Sign_up window (SUB) to create new account
 sign_up = Button(frame, text='Signup', bd=0, bg='white', fg='#57a1f8', width=5, cursor='hand2')
 sign_up.config(command=createwindow)
 sign_up.place(x=230,y=268)
